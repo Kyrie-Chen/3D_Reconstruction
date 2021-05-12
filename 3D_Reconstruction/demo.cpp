@@ -59,18 +59,21 @@ void stereo_match(int, void*)
 	bm->setBlockSize(2 * blockSize + 5);     //SAD窗口大小，5~21之间为宜
 	bm->setROI1(validROIL);
 	bm->setROI2(validROIR);
+
 	bm->setPreFilterCap(31);
 	bm->setMinDisparity(0);  //最小视差，默认值为0, 可以是负值，int型
 	bm->setNumDisparities(numDisparities * 16 + 16);//视差窗口，即最大视差值与最小视差值之差,窗口大小必须是16的整数倍，int型
+	
 	bm->setTextureThreshold(10);
 	bm->setUniquenessRatio(uniquenessRatio);//uniquenessRatio主要可以防止误匹配
 	bm->setSpeckleWindowSize(100);
 	bm->setSpeckleRange(32);
 	bm->setDisp12MaxDiff(-1);
+
 	Mat disp, disp8;
 	bm->compute(rectifyImageL, rectifyImageR, disp);//输入图像必须为灰度图
 	disp.convertTo(disp8, CV_8U, 255 / ((numDisparities * 16 + 16)*16.));//计算出的视差是CV_16S格式
-	//reprojectImageTo3D(disp, xyz, Q, true); //在实际求距离时，ReprojectTo3D出来的X / W, Y / W, Z / W都要乘以16(也就是W除以16)，才能得到正确的三维坐标信息。
+	reprojectImageTo3D(disp8, xyz, Q, true); //在实际求距离时，ReprojectTo3D出来的X / W, Y / W, Z / W都要乘以16(也就是W除以16)，才能得到正确的三维坐标信息。
 	//xyz = xyz * 16;
 	imshow("disparity", disp8);
 }
