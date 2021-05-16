@@ -21,15 +21,6 @@
     <ClCompile Include="demo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\lenovo\Desktop\stereobm.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\lenovo\Desktop\stereosgbm.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stereoBM.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -39,9 +30,18 @@
     <ClCompile Include="img2Disp.cpp">
       <Filter>源文件\function_demo</Filter>
     </ClCompile>
+    <ClCompile Include="stereobm.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
+    <ClCompile Include="stereoBM_CSDN.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
+    <ClCompile Include="stereosgbm.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\lenovo\Desktop\calib3d_c.h">
+    <ClInclude Include="calib3d_c.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -125,16 +125,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\lenovo\Desktop\stereobm.cpp" />
-    <ClCompile Include="C:\Users\lenovo\Desktop\stereosgbm.cpp" />
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="disp2Depth.cpp" />
     <ClCompile Include="img2Disp.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="stereoBM.cpp" />
+    <ClCompile Include="stereobm.cpp" />
+    <ClCompile Include="stereoBM_CSDN.cpp" />
+    <ClCompile Include="stereosgbm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\lenovo\Desktop\calib3d_c.h" />
+    <ClInclude Include="calib3d_c.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
