@@ -13,13 +13,36 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\function_demo">
+      <UniqueIdentifier>{87059cc7-921f-4703-864e-c7611d7db236}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="demo_2.cpp">
+    <ClCompile Include="C:\Users\lenovo\Desktop\stereobm.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\lenovo\Desktop\stereosgbm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stereoBM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="disp2Depth.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
+    <ClCompile Include="img2Disp.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\lenovo\Desktop\calib3d_c.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

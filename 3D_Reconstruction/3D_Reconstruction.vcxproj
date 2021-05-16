@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -125,8 +125,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\lenovo\Desktop\stereobm.cpp" />
+    <ClCompile Include="C:\Users\lenovo\Desktop\stereosgbm.cpp" />
     <ClCompile Include="demo.cpp" />
-    <ClCompile Include="demo_2.cpp" />
+    <ClCompile Include="disp2Depth.cpp" />
+    <ClCompile Include="img2Disp.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stereoBM.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\lenovo\Desktop\calib3d_c.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
