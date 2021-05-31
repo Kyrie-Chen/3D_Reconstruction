@@ -8,8 +8,8 @@
 //using namespace std;
 //using namespace cv;
 //
-//const int imageWidth = 640;                             //摄像头的分辨率  1414×962
-//const int imageHeight = 480;
+//const int imageWidth = 1280;                             //摄像头的分辨率  1414×962
+//const int imageHeight = 720;
 //Size imageSize = Size(imageWidth, imageHeight);
 //
 //Mat rgbImageL, grayImageL;
@@ -36,21 +36,39 @@
 //0 fy cy
 //0 0  1
 //*/
-//Mat cameraMatrixL = (Mat_<double>(3, 3) << 1426.379, 0, 712.043,
-//	0, 1426.379, 476.526,
-//	0, 0, 1);
-//Mat distCoeffL = (Mat_<double>(5, 1) << 0, 0, 0, 0, 0);
+////Mat cameraMatrixL = (Mat_<double>(3, 3) << 1426.379, 0, 712.043,
+////	0, 1426.379, 476.526,
+////	0, 0, 1);
+////Mat distCoeffL = (Mat_<double>(5, 1) << 0, 0, 0, 0, 0);
+////
+////Mat cameraMatrixR = (Mat_<double>(3, 3) << 1426.379, 0, 774.722,
+////	0, 1426.379, 476.526,
+////	0, 0, 1);
+////Mat distCoeffR = (Mat_<double>(5, 1) << 0, 0, 0, 0, 0);
+////
+////Mat T = (Mat_<double>(3, 1) << -39.7389449993974, 0.0740619639178984, 0.411914303245886);//T平移向量，左相机变换至右相机的平移向量
+////Mat rec = (Mat_<double>(3, 1) << -0.00306, -0.03207, 0.00206);//rec旋转向量
+////Mat R = (Mat_<double>(3, 3) << 0.999957725513956, -0.00103511880221423, 0.00913650447492805,
+////	0.00114462826834523, 0.999927476064641, -0.0119888463633882,
+////	-0.00912343197938050, 0.0119987974423658, 0.999886389470751);//R 旋转矩阵，相机1通过R变换得到相机2的位资
 //
-//Mat cameraMatrixR = (Mat_<double>(3, 3) << 1426.379, 0, 774.722,
-//	0, 1426.379, 476.526,
+//Mat cameraMatrixL = (Mat_<double>(3, 3) << 707.268, 0, 648.263,
+//	0, 707.796, 340.080,
 //	0, 0, 1);
-//Mat distCoeffR = (Mat_<double>(5, 1) << 0, 0, 0, 0, 0);
+//Mat distCoeffL = (Mat_<double>(5, 1) << -0.3010, 0.0826, -0.0002, 0.0004, 0);
 //
-//Mat T = (Mat_<double>(3, 1) << -39.7389449993974, 0.0740619639178984, 0.411914303245886);//T平移向量，左相机变换至右相机的平移向量
-//Mat rec = (Mat_<double>(3, 1) << -0.00306, -0.03207, 0.00206);//rec旋转向量
-//Mat R = (Mat_<double>(3, 3) << 0.999957725513956, -0.00103511880221423, 0.00913650447492805,
-//	0.00114462826834523, 0.999927476064641, -0.0119888463633882,
-//	-0.00912343197938050, 0.0119987974423658, 0.999886389470751);//R 旋转矩阵，相机1通过R变换得到相机2的位资
+//Mat cameraMatrixR = (Mat_<double>(3, 3) << 704.986, 0, 649.719,
+//	0, 706.100, 340.405,
+//	0, 0, 1);
+//Mat distCoeffR = (Mat_<double>(5, 1) << -0.2882, 0.0706, -0.0001, -0.0006, 0);
+//
+//
+////Mat rec = (Mat_<double>(3, 1) << -0.00306, -0.03207, 0.00206);	//rec旋转向量
+//Mat T = (Mat_<double>(3, 1) << 120.29977416992188, 0, 0);		//T平移向量，左相机变换至右相机的平移向量
+//Mat R = (Mat_<double>(3, 3) << 0.99993348121643, 0.00084137916565, 0.01149332523346,
+//	0.00114462826835, 0.999927476065, -0.0119888463634,
+//	-0.00912343197938, 0.0119987974424, 0.999886389471);	//R 旋转矩阵，相机1通过R变换得到相机2的位资
+//
 //
 //
 ///*****立体匹配*****/
@@ -126,19 +144,19 @@
 //	initUndistortRectifyMap(cameraMatrixR, distCoeffR, Rr, Pr, imageSize, CV_32FC1, mapRx, mapRy);
 //
 //	/* 2 读取图片 */
-//	rgbImageL = imread("./Piano/im0.png", CV_LOAD_IMAGE_COLOR);
+//	rgbImageL = imread("./Fire/left_1.jpg", CV_LOAD_IMAGE_COLOR);
 //	cvtColor(rgbImageL, grayImageL, CV_BGR2GRAY);
-//	rgbImageR = imread("./Piano/im1.png", CV_LOAD_IMAGE_COLOR);
+//	rgbImageR = imread("./Fire/right_1.jpg", CV_LOAD_IMAGE_COLOR);
 //	cvtColor(rgbImageR, grayImageR, CV_BGR2GRAY);
 //
 //	imshow("ImageL Before Rectify", grayImageL);
 //	imshow("ImageR Before Rectify", grayImageR);
 //
 //	/* 3 经过remap之后，左右相机的图像已经共面并且行对准了 */
-//	//remap(grayImageL, rectifyImageL, mapLx, mapLy, INTER_LINEAR);
-//	//remap(grayImageR, rectifyImageR, mapRx, mapRy, INTER_LINEAR);
-//	rectifyImageL = grayImageL;
-//	rectifyImageR = grayImageR;
+//	remap(grayImageL, rectifyImageL, mapLx, mapLy, INTER_LINEAR);
+//	remap(grayImageR, rectifyImageR, mapRx, mapRy, INTER_LINEAR);
+//	//rectifyImageL = grayImageL;
+//	//rectifyImageR = grayImageR;
 //
 //	/* 把校正结果显示出来 */
 //	Mat rgbRectifyImageL, rgbRectifyImageR;

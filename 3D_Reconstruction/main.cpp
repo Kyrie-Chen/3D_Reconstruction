@@ -112,11 +112,12 @@ void printImg(cv::Mat img, int printRows, int printCols)
 void calDispWithBM(Mat imgL, Mat imgR, Mat &imgDisparity8U)
 {
 	Mat imgDisparity16S = Mat(imgL.rows, imgL.cols, CV_16S);
+	cv::Ptr<cv::StereoBM> bm = cv::StereoBM::create(16, 9);
 
 	//--Call the constructor for StereoBM
 	cv::Size imgSize = imgL.size();
-	int numberOfDisparities = ((imgSize.width / 8) + 15) & -16;
-	cv::Ptr<cv::StereoBM> bm = cv::StereoBM::create(16, 9);
+	//int numberOfDisparities = ((imgSize.width / 8) + 15) & -16;
+	int numberOfDisparities = 640;
 
 	//--Calculate the disparity image
 	/*
@@ -150,7 +151,7 @@ void calDispWithBM(Mat imgL, Mat imgR, Mat &imgDisparity8U)
 	pixel neighborhood is smaller than the parameter, no disparity is computed at the pixel），
 	该参数不能为负值，int 型;
 	*/
-	bm->setTextureThreshold(10);
+	bm->setTextureThreshold(20);
 	/*
 	视差唯一性百分比:
 	视差窗口范围内最低代价是次低代价的(1 + uniquenessRatio/100)倍时，最低代价对应的视差值才是该像素点的视差，
@@ -182,10 +183,10 @@ void calDispWithBM(Mat imgL, Mat imgR, Mat &imgDisparity8U)
 	//saveXYZ("xyz.xls", xyz);
 
 
-	//转换为彩色图
-	Mat imgColor(imgDisparity16S.size(), CV_8UC3);
-	GenerateFalseMap(imgDisparity8U, imgColor);//转成彩图
-	imshow("disparityBM_color", imgColor);
+	////转换为彩色图
+	//Mat imgColor(imgDisparity16S.size(), CV_8UC3);
+	//GenerateFalseMap(imgDisparity8U, imgColor);//转成彩图
+	//imshow("disparityBM_color", imgColor);
 }
 
 
@@ -198,18 +199,19 @@ void calDispWithSGBM(cv::Mat imgL, cv::Mat imgR, cv::Mat &imgDisparity8U)
 	sgbm->setPreFilterCap(32);	//预处理滤波器截断值
 
 	cv::Size imgSize = imgL.size();
-	int numberOfDisparities = ((imgSize.width / 8) + 15) & -16;		//视差窗口，即最大视差值与最小视差值之差
+	//int numberOfDisparities = ((imgSize.width / 8) + 15) & -16;		//视差窗口，即最大视差值与最小视差值之差
+	int numberOfDisparities = 640;
 
-	int SADWindowSize = 9;		//SAD窗口大小
+	int SADWindowSize = 7;		//SAD窗口大小
 	int sgbmWinSize = SADWindowSize > 0 ? SADWindowSize : 3;
 	sgbm->setBlockSize(sgbmWinSize);	//！！设置SAD窗口大小
 	int cn = imgL.channels();	//图像通道数	
 	sgbm->setP1(8 * cn*sgbmWinSize*sgbmWinSize);		//动态规划参数设置
-	sgbm->setP2(32 * cn*sgbmWinSize*sgbmWinSize);
+	sgbm->setP2(64 * cn*sgbmWinSize*sgbmWinSize);
 
 	sgbm->setMinDisparity(0);
 	sgbm->setNumDisparities(numberOfDisparities);	//！！视差窗口
-	sgbm->setUniquenessRatio(10);		//！！用来防止误匹配
+	sgbm->setUniquenessRatio(25);		//！！用来防止误匹配15
 	sgbm->setSpeckleWindowSize(100);
 	sgbm->setSpeckleRange(32);
 	sgbm->setDisp12MaxDiff(1);
@@ -236,9 +238,9 @@ void calDispWithSGBM(cv::Mat imgL, cv::Mat imgR, cv::Mat &imgDisparity8U)
 	//saveXYZ("xyz.xls", xyz);
 
 	//转换为彩色图
-	Mat imgColor(imgDisparity16S.size(), CV_8UC3);
-	GenerateFalseMap(imgDisparity8U, imgColor);//转成彩图
-	imshow("disparitySGBM_color", imgColor);
+	//Mat imgColor(imgDisparity16S.size(), CV_8UC3);
+	//GenerateFalseMap(imgDisparity8U, imgColor);//转成彩图
+	//imshow("disparitySGBM_color", imgColor);
 }
 
 
@@ -295,28 +297,49 @@ void disp2Depth(cv::Mat dispMap, cv::Mat &depthMap, cv::Mat K)
 
 int main()
 {	
+	std::string path_left = "./data/1280/4_left_6.jpg";
+	std::string path_right = "./data/1280/4_right_6.jpg";
 
 	/* 视差图计算（由极线校正后的左右图像计算得到） */
-	Mat imgL = imread("./Piano/im0.png", 0);
-	Mat imgR = imread("./Piano/im1.png", 0);
+	Mat imgL = imread(path_left, 0);		//1_left_4
+	Mat imgR = imread(path_right, 0);		//1_right_4
 	imshow("imgL", imgL);
 	imshow("imgR", imgR);
 	// And create the image in which we will save our disparities
-	//BM
+	//---BM---
 	Mat imgDisparityBM = Mat(imgL.rows, imgL.cols, CV_8UC1);	//视差图
 	calDispWithBM(imgL, imgR, imgDisparityBM);
 	imshow("disparity_BM", imgDisparityBM);
-	//SGBM
+	//转换为彩色图
+	Mat imgColorBM(imgDisparityBM.size(), CV_8UC3);
+	GenerateFalseMap(imgDisparityBM, imgColorBM);//转成彩图
+	imshow("disparityBM_color", imgColorBM);
+	//保存图片
+	std::string disp_map_path_BM = path_left + ".BM.d.jpg";
+	std::string disp_color_map_path_BM = path_left + ".BM.c.jpg";
+	cv::imwrite(disp_map_path_BM, imgDisparityBM);
+	cv::imwrite(disp_color_map_path_BM, imgColorBM);
+
+	//---SGBM---
 	Mat imgDisparitySGBM = Mat(imgL.rows, imgL.cols, CV_8UC1);
 	calDispWithSGBM(imgL, imgR, imgDisparitySGBM);
 	imshow("disparity_SGBM", imgDisparitySGBM);
+	//转换为彩色图
+	Mat imgColorSGBM(imgDisparitySGBM.size(), CV_8UC3);
+	GenerateFalseMap(imgDisparitySGBM, imgColorSGBM);//转成彩图
+	imshow("disparitySGBM_color", imgColorSGBM);
+	//保存图片
+	std::string disp_map_path_SGBM = path_left + ".SGBM.d.jpg";
+	std::string disp_color_map_path_SGBM = path_left + ".SGBM.c.jpg";
+	cv::imwrite(disp_map_path_SGBM, imgDisparitySGBM);
+	cv::imwrite(disp_color_map_path_SGBM, imgColorSGBM);
 
 	/* 深度图计算（视差图转换得到） */
 	//方法1：公式计算
-	Mat imgDepth(imgDisparityBM.size(), CV_16UC1);	//深度图
-	disp2Depth(imgDisparityBM, imgDepth, cameraMatrixL);
-	saveXYZ("xyz_1.xlsx", imgDepth);
-	imshow("Depth Image", imgDepth);
+	//Mat imgDepth(imgDisparityBM.size(), CV_16UC1);	//深度图
+	//disp2Depth(imgDisparityBM, imgDepth, cameraMatrixL);
+	//saveXYZ("xyz_1.xlsx", imgDepth);
+	//imshow("Depth Image", imgDepth);
 	//方法2：库函数
 	//Mat xyz;
 	//reprojectImageTo3D(imgDisparitySGBM, xyz, cameraMatrixL, true); //在实际求距离时，ReprojectTo3D出来的X / W, Y / W, Z / W都要乘以16(也就是W除以16)，才能得到正确的三维坐标信息。
