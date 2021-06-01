@@ -125,8 +125,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CV_imageTransform.cpp" />
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="disp2Depth.cpp" />
+    <ClCompile Include="feature_match.cpp" />
     <ClCompile Include="img2Disp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stereobm.cpp" />
