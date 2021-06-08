@@ -1,3 +1,9 @@
+///* 
+//* Author：		Yangbo Chen
+//* Describe:		视差图转换为深度图
+//* Update date：	2021.06.08
+//*/
+//
 //#include <iostream>
 //#include <opencv2/opencv.hpp>
 //using namespace std;
@@ -77,8 +83,6 @@
 //		cv::waitKey(0);
 //	}
 //}
-//
-//
 //
 //
 //

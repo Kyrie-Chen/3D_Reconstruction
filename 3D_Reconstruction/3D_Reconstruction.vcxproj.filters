@@ -16,6 +16,9 @@
     <Filter Include="源文件\function_demo">
       <UniqueIdentifier>{87059cc7-921f-4703-864e-c7611d7db236}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\image_processing">
+      <UniqueIdentifier>{ef9f71e2-a81b-4603-9a6c-113831113e0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.cpp">
@@ -39,14 +42,17 @@
     <ClCompile Include="stereosgbm.cpp">
       <Filter>源文件\function_demo</Filter>
     </ClCompile>
-    <ClCompile Include="feature_match.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="CV_imageTransform.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="edge_detection.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\image_processing</Filter>
+    </ClCompile>
+    <ClCompile Include="feature_match.cpp">
+      <Filter>源文件\image_processing</Filter>
+    </ClCompile>
+    <ClCompile Include="threshold_seg.cpp">
+      <Filter>源文件\image_processing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

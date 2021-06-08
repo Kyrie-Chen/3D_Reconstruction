@@ -135,6 +135,7 @@
     <ClCompile Include="stereobm.cpp" />
     <ClCompile Include="stereoBM_CSDN.cpp" />
     <ClCompile Include="stereosgbm.cpp" />
+    <ClCompile Include="threshold_seg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calib3d_c.h" />
