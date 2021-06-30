@@ -99,25 +99,36 @@
 //}
 //
 //
+//
+//
 //int main(int argc, char *argv[])
 //{
+//	string img_path = "./data01/1280/1_left_4.jpg";
 //	//cv::Mat image = cv::imread("./data02/rect_1280/left_1.jpg");
-//	cv::Mat image = cv::imread("./data01/1280/1_left_4.jpg");
-//	cv::imshow("SoureImage", image);
-//	cv::cvtColor(image, image, CV_RGB2GRAY);
+//	cv::Mat imageSrc = cv::imread(img_path);
+//	cv::imshow("Soure Image", imageSrc);
 //
+//	cv::Mat imageGray;
+//	cv::cvtColor(imageSrc, imageGray, CV_RGB2GRAY);
+//	//Otsu算法
 //	cv::Mat imageOutput;
-//	int thresholdValue = OtsuAlgThreshold(image);
+//	int thresholdValue = OtsuAlgThreshold(imageGray);
 //	cout << "类间方差为： " << thresholdValue << endl;
-//	cv::threshold(image, imageOutput, thresholdValue, 255, CV_THRESH_BINARY);
-//	
+//	cv::threshold(imageGray, imageOutput, thresholdValue, 255, CV_THRESH_BINARY);
+//	cv::imshow("Output Image", imageOutput);
+//
 //	//Opencv自带的Otsu算法
 //	cv::Mat imageOtsu;
-//	cv::threshold(image, imageOtsu, 0, 255, CV_THRESH_OTSU); 
-//
-//	//imshow("SoureImage",image);
-//	cv::imshow("Output Image", imageOutput);
+//	cv::threshold(imageGray, imageOtsu, 0, 255, CV_THRESH_OTSU);
 //	cv::imshow("Opencv Otsu", imageOtsu);
+//
+//	//转换为HSV
+//	cv::Mat imageHSV;
+//	cv::cvtColor(imageSrc, imageHSV, CV_BGR2HSV);
+//	cv::imshow("HSV Image", imageHSV);
+//	string img_name = img_path + ".HSV.png";
+//	cv::imwrite(img_name, imageHSV);
+//
 //	cv::waitKey();
 //	return 0;
 //}

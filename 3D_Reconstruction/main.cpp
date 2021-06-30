@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <utility>
 #include <opencv2/opencv.hpp>
 using namespace std;
 using namespace cv;
@@ -117,7 +118,7 @@ void calDispWithBM(Mat imgL, Mat imgR, Mat &imgDisparity8U)
 	//--Call the constructor for StereoBM
 	cv::Size imgSize = imgL.size();
 	//int numberOfDisparities = ((imgSize.width / 8) + 15) & -16;
-	int numberOfDisparities = 320;
+	int numberOfDisparities = 128 * 2;
 
 	//--Calculate the disparity image
 	/*
@@ -294,17 +295,120 @@ void disp2Depth(cv::Mat dispMap, cv::Mat &depthMap, cv::Mat K)
 }
 
 
+//* 通过HSI颜色空间进行分割 */
+int HSISegmentation(cv::Mat img_hsi, cv::Mat& mask_hsi,
+	std::pair<int, int> low_H, std::pair<int, int> up_H, std::pair<int, int> S, std::pair<int, int> V)
+{
+	if (img_hsi.empty()) {
+		cout << "img_hsi is NULL" << endl;
+		return -1;
+	}
+	if (img_hsi.channels() != 3) {
+		cout << "img_hsi.channels != 3" << endl;
+		return -1;
+	}
+
+	//通道分割
+	vector<cv::Mat> img_split;
+	cv::split(img_hsi, img_split);
+
+	//阈值分割（三个通道分别进行）
+	cv::Mat mask_H, mask_S, mask_V;
+	cv::Mat mask_H_low, mask_H_up;
+
+	cv::Mat img_H = img_split[0];
+	cv::imshow("img_H", img_H);
+	//savePoint1Channel("img_H.csv", img_H);
+	cv::inRange(img_H, low_H.first, low_H.second, mask_H_low);		//下边界范围
+	cv::inRange(img_H, up_H.first, up_H.second, mask_H_up);			//上边界范围
+	cv::bitwise_or(mask_H_low, mask_H_up, mask_H);		//合并（或操作）
+	//自适应阈值分割
+	//cv::Mat imageOtsu;
+	//cv::threshold(img_H, mask_H, 0, 255, CV_THRESH_OTSU);
+	//cv::bitwise_not(mask_H, mask_H);
+	//cv::imshow("mask_H", mask_H);
+
+	cv::Mat img_S = img_split[1];
+	cv::imshow("img_S", img_S);
+	//savePoint1Channel("img_S.csv", img_S);
+	//自适应阈值分割
+	//cv::threshold(img_S, mask_S, 0, 255, CV_THRESH_OTSU);
+	//cv::bitwise_not(mask_S, mask_S);
+	cv::inRange(img_S, S.first, S.second, mask_S);
+	cv::imshow("mask_S", mask_S);
+
+	cv::Mat img_V = img_split[2];
+	cv::imshow("img_V", img_V);
+	//savePoint1Channel("img_V.csv", img_V);
+	cv::inRange(img_V, V.first, V.second, mask_V);
+	//cv::threshold(img_S, mask1, S_min, 255, cv::THRESH_BINARY);		//大于S_min的留白
+	//cv::threshold(img_S, mask2, S_max, 255, cv::THRESH_BINARY_INV);	//小于S_max的留白
+	//cv::multiply(mask1, mask2, mask_S);		//矩阵对应元素相乘（合并结果）
+	//cv::imshow("mask_V", mask_V);
+
+	//掩码合并
+	cv::bitwise_and(mask_H, mask_S, mask_hsi);
+	cv::bitwise_and(mask_hsi, mask_V, mask_hsi);
+	cv::imshow("mask_hsi", mask_hsi);
+
+	//cv::inRange(img_hsi, cv::Scalar(H_min, S_min, V_min), cv::Scalar(H_max, S_max, V_max), mask_hsi);	//直接检测
+	return 1;
+}
+
+
 
 int main()
 {	
-	std::string path_left = "./data02/rect_1280_light/left_1.jpg";
-	std::string path_right = "./data02/rect_1280_light/right_1.jpg";
+	std::string path_left = "./data02/rect_640/left_4.jpg";
+	std::string path_right = "./data02/rect_640/right_4.jpg";
+	Mat imgL_src = imread(path_left);		//1_left_4
+	Mat imgR_src = imread(path_right);		//1_right_4
+	imshow("imgL", imgL_src);
+	imshow("imgR", imgR_src);
+	//cv::waitKey();
+
+	string mode = "HSV_00";
+
+	cv::Mat imgL_res, imgR_res;		//分割后图像
+	//HSV分割
+	if (mode == "HSV") {
+		/*HSV分割*/
+		//转换为HSV
+		cv::Mat imgL_hsi, imgR_hsi;
+		cv::cvtColor(imgL_src, imgL_hsi, CV_BGR2HSV);
+		cv::cvtColor(imgR_src, imgR_hsi, CV_BGR2HSV);
+		//HSV掩码获取
+		cv::Mat maskL_hsi, maskR_hsi;
+		std::pair<int, int> low_H(0, 50), up_H(160, 180), S(0, 255), V(127, 255);
+		HSISegmentation(imgL_hsi, maskL_hsi, low_H, up_H, S, V);
+		HSISegmentation(imgR_hsi, maskR_hsi, low_H, up_H, S, V);
+		//形态学处理
+		cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7, 7));
+		cv::morphologyEx(maskL_hsi, maskL_hsi, cv::MORPH_CLOSE, kernel);		//闭运算，填充前景黑点
+		cv::morphologyEx(maskL_hsi, maskL_hsi, cv::MORPH_OPEN, kernel);		//开运算，填充背景白点（去噪）
+		cv::morphologyEx(maskL_hsi, maskL_hsi, cv::MORPH_DILATE, kernel);		//膨胀，增加白色区域
+
+		cv::morphologyEx(maskR_hsi, maskR_hsi, cv::MORPH_CLOSE, kernel);		//闭运算，填充前景黑点
+		cv::morphologyEx(maskR_hsi, maskR_hsi, cv::MORPH_OPEN, kernel);		//开运算，填充背景白点（去噪）
+		cv::morphologyEx(maskR_hsi, maskR_hsi, cv::MORPH_DILATE, kernel);		//膨胀，增加白色区域
+		//掩码操作
+		//cv::Mat imgL_res, imgR_res;
+		imgL_src.copyTo(imgL_res, maskL_hsi);
+		imgR_src.copyTo(imgR_res, maskR_hsi);
+		cv::imshow("Left Image Res", imgL_res);
+		cv::imshow("Right Image Res", imgR_res);
+	}
+	//不作处理
+	else {
+		imgL_res = imgL_src;
+		imgR_res = imgR_src;
+	}	
 
 	/* 视差图计算（由极线校正后的左右图像计算得到） */
-	Mat imgL = imread(path_left, 0);		//1_left_4
-	Mat imgR = imread(path_right, 0);		//1_right_4
-	imshow("imgL", imgL);
-	imshow("imgR", imgR);
+	//转换为灰度图 —— ！修改视差图计算的对象！
+	cv::Mat imgL, imgR;
+	cv::cvtColor(imgL_res, imgL, CV_BGR2GRAY);
+	cv::cvtColor(imgR_res, imgR, CV_BGR2GRAY);
 	// And create the image in which we will save our disparities
 	//---BM---
 	Mat imgDisparityBM = Mat(imgL.rows, imgL.cols, CV_8UC1);	//视差图
@@ -312,11 +416,18 @@ int main()
 	imshow("disparity_BM", imgDisparityBM);
 	//转换为彩色图
 	Mat imgColorBM(imgDisparityBM.size(), CV_8UC3);
-	GenerateFalseMap(imgDisparityBM, imgColorBM);//转成彩图
+	GenerateFalseMap(imgDisparityBM, imgColorBM);	//转成彩图
 	imshow("disparityBM_color", imgColorBM);
 	//保存图片
-	std::string disp_map_path_BM = path_left + ".BM.d.jpg";
-	std::string disp_color_map_path_BM = path_left + ".BM.c.jpg";
+	std::string disp_map_path_BM, disp_color_map_path_BM;
+	if (mode == "HSV") {
+		disp_map_path_BM = path_left + ".BM.HSV.d.jpg";		//.HSV
+		disp_color_map_path_BM = path_left + ".BM.HSV.c.jpg";		//.HSV
+	}
+	else {
+		disp_map_path_BM = path_left + ".BM.d.jpg";	
+		disp_color_map_path_BM = path_left + ".BM.c.jpg";
+	}
 	cv::imwrite(disp_map_path_BM, imgDisparityBM);
 	cv::imwrite(disp_color_map_path_BM, imgColorBM);
 

@@ -54,6 +54,15 @@
     <ClCompile Include="threshold_seg.cpp">
       <Filter>源文件\image_processing</Filter>
     </ClCompile>
+    <ClCompile Include="HSI_seg.cpp">
+      <Filter>源文件\image_processing</Filter>
+    </ClCompile>
+    <ClCompile Include="k_means.cpp">
+      <Filter>源文件\image_processing</Filter>
+    </ClCompile>
+    <ClCompile Include="disp2Point.cpp">
+      <Filter>源文件\function_demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="calib3d_c.h">
